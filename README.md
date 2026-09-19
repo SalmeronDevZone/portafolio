@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="assets/jp-logo.png" width="220" alt="Jurassic Park">
+<img src="https://upload.wikimedia.org/wikipedia/en/9/93/Jurassic_Park_%28franchise_logo%29.png" width="220" alt="Jurassic Park">
+
+
 
 # 🦖 JSALME · AZURE DEVOPS ENGINEER
 
