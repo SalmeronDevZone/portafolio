@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSALME · DevOps Engineer · Jurassic Park</title>
+<meta name="description" content="Portafolio de JSALME, Azure DevOps Engineer en Jurassic Park (Isla Nublar). Terraform, Kubernetes, Azure y datos.">
+<link rel="icon" href="assets/jp-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0b0b12; --night:#10162a; --jungle:#0f5f2c; --leaf:#1f9a3f; --lime:#8ae234;
+  --amber:#fca044; --gold:#f8b800; --red:#e03c28; --blood:#8c1a10; --white:#fcfcfc;
+  --sky:#3cbcfc; --grey:#7c7c7c; --panel:#1a1f33; --panel2:#232a45; --ink:#fcfcfc;
+  --px:4px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--black); color:var(--ink);
+  font-family:'VT323',monospace; font-size:22px; line-height:1.3;
+  overflow-x:hidden; image-rendering:pixelated;
+}
+h1,h2,h3,.pixel{font-family:'Press Start 2P',monospace;font-weight:400;letter-spacing:.5px}
+a{color:var(--gold)}
+::selection{background:var(--gold);color:var(--black)}
+
+/* ===== CRT ===== */
+.crt::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,.18) 0 2px,transparent 2px 4px);
+}
+.crt::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.55) 100%);
+}
+body.no-crt::before,body.no-crt::after{display:none}
+
+/* ===== BOOT SCREEN ===== */
+#boot{
+  position:fixed;inset:0;z-index:9000;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  text-align:center;padding:16px;cursor:pointer;
+}
+#boot.hide{animation:bootOut .6s steps(6) forwards}
+@keyframes bootOut{to{opacity:0;visibility:hidden}}
+#boot .copy{font-family:'Press Start 2P';font-size:10px;color:var(--grey);line-height:2}
+#boot .press{font-family:'Press Start 2P';font-size:16px;color:var(--gold);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+#bootLogo{width:min(520px,90vw);height:auto;image-rendering:pixelated}
+.boot-sub{font-family:'Press Start 2P';font-size:11px;color:var(--lime)}
+
+/* ===== HUD ===== */
+.hud{
+  position:sticky;top:0;z-index:500;background:#000;border-bottom:4px solid var(--jungle);
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:10px 16px;font-family:'Press Start 2P';font-size:10px;
+}
+.hud .cell{display:flex;flex-direction:column;gap:6px}
+.hud .lbl{color:var(--grey)}
+.hud .val{color:var(--white)}
+.hud .coin{display:inline-block;width:10px;height:10px;background:var(--gold);box-shadow:inset -2px -2px 0 #b07000;margin-right:6px;vertical-align:middle;animation:spin 1s steps(4) infinite}
+@keyframes spin{25%{transform:scaleX(.6)}50%{transform:scaleX(.15)}75%{transform:scaleX(.6)}}
+.hearts span{color:var(--red)}
+.hud nav{display:flex;gap:14px;flex-wrap:wrap}
+.hud nav a{color:var(--white);text-decoration:none}
+.hud nav a:hover,.hud nav a:focus{color:var(--gold)}
+.hud nav a:hover::before{content:"▶ ";color:var(--gold)}
+.hud .btns{display:flex;gap:8px}
+.tiny-btn{font-family:'Press Start 2P';font-size:9px;background:var(--panel);color:var(--white);border:3px solid var(--white);padding:6px 8px;cursor:pointer}
+.tiny-btn:hover{background:var(--gold);color:#000}
+
+/* ===== HERO / LEVEL 1-1 ===== */
+.hero{
+  position:relative;min-height:88vh;overflow:hidden;
+  background:
+    linear-gradient(to bottom,#0a0f24 0%,#1b2350 45%,#3b2a5a 70%,#c4502c 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 16px 180px;text-align:center;
+}
+.stars{position:absolute;inset:0;pointer-events:none}
+.stars i{position:absolute;width:3px;height:3px;background:#fff;animation:twinkle 2s steps(2) infinite}
+@keyframes twinkle{50%{opacity:.2}}
+.moon{position:absolute;top:60px;right:10%;width:56px;height:56px;background:#f4f0c8;box-shadow:inset -12px -4px 0 #d8d2a0, 0 0 0 4px #0a0f24, 0 0 40px 10px rgba(244,240,200,.25)}
+.volcano{position:absolute;bottom:130px;left:4%;width:0;height:0;border-left:170px solid transparent;border-right:170px solid transparent;border-bottom:190px solid #2a1838;filter:drop-shadow(0 0 0 #000)}
+.volcano::after{content:"";position:absolute;left:-26px;top:0;width:52px;height:14px;background:var(--red);box-shadow:0 -10px 0 -2px var(--amber),0 -24px 0 -6px rgba(252,160,68,.5)}
+.hills{position:absolute;left:0;right:0;bottom:120px;height:120px;background:
+  radial-gradient(circle at 10% 100%,#0a3a1c 0 90px,transparent 91px),
+  radial-gradient(circle at 35% 100%,#0c4422 0 120px,transparent 121px),
+  radial-gradient(circle at 65% 100%,#0a3a1c 0 100px,transparent 101px),
+  radial-gradient(circle at 90% 100%,#0c4422 0 130px,transparent 131px);}
+.palms{position:absolute;left:0;right:0;bottom:120px;height:160px;pointer-events:none}
+.palm{position:absolute;bottom:0;width:10px;background:#5a3a1a;box-shadow:inset -3px 0 0 #3a2410}
+.palm::before{content:"";position:absolute;top:-18px;left:-34px;width:78px;height:24px;background:
+  linear-gradient(var(--leaf),var(--leaf)) 0 8px/30px 8px no-repeat,
+  linear-gradient(var(--leaf),var(--leaf)) 44px 8px/30px 8px no-repeat,
+  linear-gradient(var(--jungle),var(--jungle)) 20px 0/38px 10px no-repeat,
+  linear-gradient(var(--jungle),var(--jungle)) 0 16px/10px 8px no-repeat,
+  linear-gradient(var(--jungle),var(--jungle)) 68px 16px/10px 8px no-repeat}
+.ground{position:absolute;left:0;right:0;bottom:0;height:120px;
+  background:
+   repeating-linear-gradient(90deg,#1f9a3f 0 16px,#18803a 16px 32px) top/100% 16px no-repeat,
+   repeating-linear-gradient(90deg,#6b3f1d 0 32px,#5a3316 32px 64px) 0 16px/100% 104px no-repeat;
+  border-top:4px solid #000;animation:scrollGround 1.2s linear infinite}
+@keyframes scrollGround{to{background-position:-32px 0,-64px 16px}}
+.fence{position:absolute;bottom:120px;right:0;left:0;height:70px;pointer-events:none;
+  background:
+   repeating-linear-gradient(90deg,#555 0 8px,transparent 8px 120px),
+   repeating-linear-gradient(0deg,transparent 0 14px,#888 14px 16px);
+  opacity:.55;animation:scrollFence 3s linear infinite}
+@keyframes scrollFence{to{background-position:-120px 0,0 0}}
+.volt{position:absolute;bottom:160px;left:0;right:0;height:2px;background:var(--sky);box-shadow:0 0 8px var(--sky);animation:volt .3s steps(2) infinite;opacity:.8}
+@keyframes volt{50%{opacity:.2}}
+
+#rexRunner{position:absolute;bottom:116px;left:-140px;z-index:3;animation:rexRun 9s linear infinite}
+@keyframes rexRun{to{left:110%}}
+#jeep{position:absolute;bottom:116px;left:-400px;z-index:3;animation:rexRun 9s linear infinite;animation-delay:-.2s}
+
+.hero-inner{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:18px}
+#heroLogo{width:min(460px,86vw);image-rendering:pixelated;filter:drop-shadow(6px 6px 0 #000)}
+.hero h1{font-size:clamp(16px,3.4vw,30px);color:var(--white);text-shadow:4px 4px 0 #000;line-height:1.5}
+.hero h1 .role{color:var(--gold)}
+.badge{display:inline-block;font-family:'Press Start 2P';font-size:10px;padding:8px 10px;background:#000;border:3px solid var(--gold);color:var(--gold)}
+.hero p.lead{max-width:760px;font-size:26px;color:#e8e8e8;text-shadow:2px 2px 0 #000}
+.cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.btn{font-family:'Press Start 2P';font-size:12px;text-decoration:none;padding:14px 18px;color:#000;background:var(--gold);border:4px solid #000;box-shadow:6px 6px 0 #000,inset -4px -4px 0 #b07000;cursor:pointer;display:inline-block}
+.btn:hover{transform:translate(2px,2px);box-shadow:4px 4px 0 #000,inset -4px -4px 0 #b07000}
+.btn:active{transform:translate(6px,6px);box-shadow:0 0 0 #000}
+.btn.red{background:var(--red);color:#fff;box-shadow:6px 6px 0 #000,inset -4px -4px 0 var(--blood)}
+.btn.green{background:var(--leaf);color:#fff;box-shadow:6px 6px 0 #000,inset -4px -4px 0 var(--jungle)}
+
+/* ===== SECTIONS ===== */
+section.stage{padding:90px 16px;position:relative}
+.wrap{max-width:1150px;margin:0 auto}
+.stage-title{display:flex;align-items:center;gap:14px;margin-bottom:34px;flex-wrap:wrap}
+.stage-title .world{font-family:'Press Start 2P';font-size:10px;color:#000;background:var(--gold);padding:8px 10px}
+.stage-title h2{font-size:clamp(15px,2.6vw,24px);color:var(--white);text-shadow:3px 3px 0 #000}
+.stage-title .line{flex:1;height:4px;background:repeating-linear-gradient(90deg,var(--jungle) 0 12px,transparent 12px 20px);min-width:40px}
+.sub{color:#bdbdbd;margin:-18px 0 30px;font-size:24px}
+
+.box{
+  background:var(--panel);border:4px solid var(--white);
+  box-shadow:0 0 0 4px #000,8px 8px 0 4px #000;position:relative;padding:22px;
+}
+.box.gold{border-color:var(--gold)}
+.box.green{border-color:var(--leaf)}
+.box.red{border-color:var(--red)}
+.box h3{font-size:12px;line-height:1.6;margin-bottom:12px;color:var(--gold)}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .5s steps(5),transform .5s steps(5)}
+.reveal.in{opacity:1;transform:none}
+
+/* bg variations */
+#player{background:linear-gradient(#0b0b12,#0e1a14)}
+#inventory{background:#0e1a14}
+#missions{background:linear-gradient(#0e1a14,#101a30)}
+#terminal-sec{background:#101a30}
+#boss{background:linear-gradient(#101a30,#240c0c)}
+#career{background:#0b0b12}
+#achievements{background:linear-gradient(#0b0b12,#1a1428)}
+#contact{background:#000}
+
+/* ===== PLAYER SELECT ===== */
+.player-grid{display:grid;grid-template-columns:320px 1fr;gap:34px}
+@media (max-width:860px){.player-grid{grid-template-columns:1fr}}
+.card-portrait{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.portrait-frame{background:#000;border:4px solid var(--gold);padding:16px;width:100%;display:flex;justify-content:center;
+  background-image:repeating-linear-gradient(0deg,#07130b 0 8px,#0a1a0f 8px 16px)}
+.name{font-family:'Press Start 2P';font-size:16px;color:var(--white)}
+.class{font-family:'Press Start 2P';font-size:9px;color:var(--lime);line-height:1.8}
+.idcard{width:100%;font-size:20px;text-align:left;border-top:4px dashed #444;padding-top:10px}
+.idcard div{display:flex;justify-content:space-between;gap:10px}
+.idcard b{color:var(--gold);font-weight:400}
+.stats{display:grid;gap:14px}
+.stat{display:grid;grid-template-columns:170px 1fr 54px;align-items:center;gap:12px}
+@media (max-width:560px){.stat{grid-template-columns:110px 1fr 44px}}
+.stat .k{font-family:'Press Start 2P';font-size:9px;color:var(--white)}
+.stat .n{font-family:'Press Start 2P';font-size:9px;color:var(--gold);text-align:right}
+.bar{height:20px;background:#000;border:3px solid var(--white);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0;right:auto;width:0;transition:width 1.2s steps(12);
+  background:repeating-linear-gradient(90deg,var(--c,var(--leaf)) 0 10px,transparent 10px 12px)}
+.bio{margin-top:26px;font-size:23px;color:#ddd}
+.bio em{color:var(--gold);font-style:normal}
+.dialog{margin-top:22px;background:#000;border:4px solid var(--white);padding:16px 18px;font-size:22px;position:relative}
+.dialog::after{content:"▼";position:absolute;right:12px;bottom:6px;color:var(--gold);animation:blink .8s steps(1) infinite;font-size:14px}
+.dialog .who{font-family:'Press Start 2P';font-size:9px;color:var(--sky);display:block;margin-bottom:8px}
+
+/* ===== INVENTORY ===== */
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.slot{background:#000;border:4px solid #3a3a3a;padding:14px 8px;text-align:center;cursor:pointer;position:relative;transition:transform .1s steps(2)}
+.slot:hover,.slot:focus{border-color:var(--gold);transform:translateY(-4px);outline:none}
+.slot .icon{font-family:'Press Start 2P';font-size:14px;width:56px;height:56px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;color:#000;box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.25)}
+.slot .nm{font-family:'Press Start 2P';font-size:9px;line-height:1.6}
+.slot .lv{font-size:18px;color:var(--gold)}
+.slot.rare::after{content:"★";position:absolute;top:4px;right:8px;color:var(--gold);font-size:16px}
+.slot .tier{position:absolute;top:6px;left:8px;font-family:'Press Start 2P';font-size:7px;color:var(--grey)}
+.inv-info{margin-top:22px;min-height:90px}
+.inv-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.inv-tabs button{font-family:'Press Start 2P';font-size:9px;padding:10px 12px;background:#000;color:var(--white);border:3px solid var(--grey);cursor:pointer}
+.inv-tabs button.on{border-color:var(--gold);color:var(--gold)}
+
+/* ===== MISSIONS / WORLD MAP ===== */
+.map{position:relative;margin-bottom:40px;background:#0b3d6b;border:4px solid var(--white);box-shadow:0 0 0 4px #000,8px 8px 0 4px #000;padding:14px;overflow:hidden}
+.map svg{width:100%;height:auto;display:block}
+.map .node{cursor:pointer}
+.map .node:hover rect.pin,.map .node.active rect.pin{fill:var(--gold)}
+.map-legend{font-family:'Press Start 2P';font-size:8px;color:var(--white);margin-top:10px;display:flex;gap:18px;flex-wrap:wrap}
+.missions{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:30px}
+@media (max-width:400px){.missions{grid-template-columns:1fr}}
+.mission{display:flex;flex-direction:column;gap:12px}
+.mission.flash{animation:flash .6s steps(3) 2}
+@keyframes flash{50%{border-color:var(--gold);background:#2d2a10}}
+.mission .lvl{display:flex;justify-content:space-between;align-items:center;font-family:'Press Start 2P';font-size:9px}
+.mission .lvl .id{background:var(--leaf);color:#fff;padding:6px 8px}
+.mission .lvl .diff{color:var(--gold)}
+.mission h3{margin:0}
+.mission p{font-size:21px;color:#ddd}
+.mission ul{list-style:none;font-size:20px;color:#cfcfcf}
+.mission ul li{padding-left:22px;position:relative}
+.mission ul li::before{content:"■";position:absolute;left:0;color:var(--leaf);font-size:14px;top:2px}
+.loot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto}
+.loot div{background:#000;border:3px solid #333;padding:8px 4px;text-align:center}
+.loot b{display:block;font-family:'Press Start 2P';font-size:12px;color:var(--lime);font-weight:400;margin-bottom:4px}
+.loot span{font-size:16px;color:#aaa;line-height:1.1;display:block}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:'Press Start 2P';font-size:7px;padding:5px 6px;background:#000;border:2px solid var(--sky);color:var(--sky)}
+.tag.az{border-color:#3c8cfc;color:#7cb4fc}
+.tag.tf{border-color:#a07cfc;color:#c4a8fc}
+.tag.k8{border-color:#3cbcfc;color:#8cd8fc}
+.tag.dt{border-color:var(--amber);color:var(--amber)}
+
+/* ===== TERMINAL ===== */
+.term{background:#000;border:4px solid var(--leaf);box-shadow:0 0 0 4px #000,8px 8px 0 4px #000,0 0 40px rgba(31,154,63,.25)}
+.term-bar{display:flex;align-items:center;gap:10px;background:var(--leaf);padding:8px 12px;font-family:'Press Start 2P';font-size:9px;color:#000}
+.term-bar i{width:12px;height:12px;background:#000;display:inline-block}
+.term-body{padding:18px;min-height:420px;max-height:520px;overflow:auto;font-size:21px;color:#9cf09c;white-space:pre-wrap;word-break:break-word}
+.term-body .g{color:var(--lime)} .term-body .y{color:var(--gold)} .term-body .r{color:#ff6b5b}
+.term-body .c{color:var(--sky)} .term-body .w{color:#fff} .term-body .d{color:#777}
+.cursor{display:inline-block;width:12px;height:20px;background:var(--lime);vertical-align:middle;animation:blink .7s steps(1) infinite}
+.term-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+
+/* ===== BOSS ===== */
+.boss-arena{display:grid;grid-template-columns:1fr 1.3fr;gap:30px;align-items:start}
+@media (max-width:860px){.boss-arena{grid-template-columns:1fr}}
+.boss-card{text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center}
+.boss-name{font-family:'Press Start 2P';font-size:12px;color:var(--red);line-height:1.7}
+.boss-hp{width:100%}
+.boss-hp .bar i{--c:var(--red)}
+.boss-sprite{animation:bob 1s steps(2) infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.boss-sprite.hit{animation:hit .15s steps(2) 4}
+@keyframes hit{50%{filter:brightness(4);transform:translateX(6px)}}
+.moves{display:grid;gap:12px}
+.move{display:grid;grid-template-columns:90px 1fr;gap:14px;align-items:start;background:#000;border:3px solid #333;padding:12px}
+.move .t{font-family:'Press Start 2P';font-size:9px;color:var(--gold);line-height:1.6}
+.move p{font-size:20px;color:#ddd}
+.move p b{color:var(--lime);font-weight:400}
+.move.done{border-color:var(--leaf)}
+.boss-result{font-family:'Press Start 2P';font-size:11px;color:var(--lime);line-height:1.8;min-height:40px}
+
+/* ===== CAREER ===== */
+.timeline{position:relative;display:grid;gap:30px;padding-left:40px}
+.timeline::before{content:"";position:absolute;left:12px;top:0;bottom:0;width:6px;background:repeating-linear-gradient(to bottom,var(--leaf) 0 12px,transparent 12px 18px)}
+.tl{position:relative}
+.tl::before{content:"";position:absolute;left:-40px;top:18px;width:30px;height:30px;background:var(--gold);border:4px solid #000;box-shadow:inset -4px -4px 0 #b07000}
+.tl.current::before{background:var(--lime);box-shadow:inset -4px -4px 0 var(--leaf),0 0 0 4px var(--lime);animation:blink 1.2s steps(1) infinite}
+.tl .when{font-family:'Press Start 2P';font-size:9px;color:var(--grey);margin-bottom:8px}
+.tl h3{font-size:12px}
+.tl .co{font-size:22px;color:var(--sky);margin-bottom:8px}
+.tl p{font-size:21px;color:#ddd}
+
+/* ===== ACHIEVEMENTS ===== */
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.ach{display:flex;gap:14px;align-items:center;background:#000;border:4px solid #333;padding:14px}
+.ach.unlocked{border-color:var(--gold)}
+.ach .medal{flex:0 0 52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:30px;background:#222;border:3px solid #555}
+.ach.unlocked .medal{background:var(--gold);border-color:#fff;box-shadow:inset -4px -4px 0 #b07000}
+.ach .tt{font-family:'Press Start 2P';font-size:9px;color:var(--white);line-height:1.6;margin-bottom:4px}
+.ach .dd{font-size:18px;color:#aaa;line-height:1.15}
+.ach.locked{opacity:.5}
+.ach.locked .tt::after{content:" 🔒"}
+
+/* ===== CONTACT / CONTINUE ===== */
+#contact{text-align:center;padding:110px 16px}
+.continue{font-family:'Press Start 2P';font-size:clamp(22px,5vw,46px);color:var(--white);text-shadow:4px 4px 0 var(--red)}
+.countdown{font-family:'Press Start 2P';font-size:clamp(60px,14vw,130px);color:var(--gold);margin:20px 0;text-shadow:6px 6px 0 #b07000}
+.contact-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:20px}
+.game-over{font-family:'Press Start 2P';font-size:14px;color:var(--red);margin-top:18px;min-height:24px}
+
+footer{background:#000;border-top:4px solid var(--jungle);padding:26px 16px;text-align:center;font-size:18px;color:#777}
+footer .pixel{font-size:9px;color:#aaa;line-height:2}
+
+/* ===== NEDRY / MODAL ===== */
+.modal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.show{display:flex}
+.modal .box{max-width:640px;width:100%;text-align:center}
+.nedry-text{font-family:'Press Start 2P';font-size:clamp(14px,3vw,22px);color:var(--red);line-height:1.8;animation:blink .5s steps(1) infinite}
+.nedry-wrap{display:flex;justify-content:center;margin:14px 0}
+.stampede{position:fixed;bottom:10px;left:-200px;z-index:7000;pointer-events:none;animation:rexRun 4s linear forwards}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:8500;background:#000;border:4px solid var(--gold);padding:12px 16px;font-family:'Press Start 2P';font-size:10px;color:var(--gold);display:none;max-width:92vw;line-height:1.6;text-align:center}
+.toast.show{display:block;animation:toastIn .3s steps(3)}
+@keyframes toastIn{from{transform:translate(-50%,40px)}}
+
+.skip{position:absolute;left:-999px;top:0;background:#000;color:#fff;padding:8px;z-index:9999}
+.skip:focus{left:8px}
+
+@media (max-width:700px){
+  .hud nav{display:none}
+  .volcano{transform:scale(.6);transform-origin:bottom left}
+  body{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0s!important;animation-iteration-count:1!important;transition:none!important}
+  #rexRunner,#jeep{display:none}
+}
+</style>
+</head>
+<body class="crt">
+<a class="skip" href="#player">Saltar al contenido</a>
+
+<!-- ================= BOOT ================= -->
+<div id="boot" role="button" tabindex="0" aria-label="Pulsa para empezar">
+  <canvas id="bootLogo" width="232" height="172" aria-hidden="true"></canvas>
+  <div class="boot-sub">DEVOPS EDITION</div>
+  <div class="press">▶ PRESS START ◀</div>
+  <div class="copy">© 1993-2026 INGEN · ISLA NUBLAR OPS DIVISION<br>LICENSED BY JSALME CLOUD SYSTEMS</div>
+</div>
+
+<!-- ================= HUD ================= -->
+<header class="hud" aria-label="Barra de estado">
+  <div class="cell"><span class="lbl">PLAYER</span><span class="val" id="hudName">JSALME</span></div>
+  <div class="cell"><span class="lbl">SCORE</span><span class="val" id="score">000000</span></div>
+  <div class="cell"><span class="lbl">COINS</span><span class="val"><i class="coin"></i><span id="coins">00</span></span></div>
+  <div class="cell"><span class="lbl">UPTIME</span><span class="val" style="color:var(--lime)">99.99%</span></div>
+  <div class="cell"><span class="lbl">LIVES</span><span class="val hearts"><span>♥♥♥</span></span></div>
+  <nav aria-label="Secciones">
+    <a href="#player">PLAYER</a><a href="#inventory">ITEMS</a><a href="#missions">MISIONES</a><a href="#boss">BOSS</a><a href="#career">RUTA</a><a href="#contact">CONTACTO</a>
+  </nav>
+  <div class="btns">
+    <button class="tiny-btn" id="soundBtn" aria-pressed="false">♪ OFF</button>
+    <button class="tiny-btn" id="crtBtn" aria-pressed="true">CRT</button>
+  </div>
+</header>
+
+<main>
+<!-- ================= HERO ================= -->
+<section class="hero" id="top" aria-label="Inicio">
+  <div class="stars" id="stars"></div>
+  <div class="moon"></div>
+  <div class="volcano"></div>
+  <div class="hills"></div>
+  <div class="palms" id="palms"></div>
+  <div class="fence"></div>
+  <div class="volt"></div>
+  <canvas id="rexRunner" aria-hidden="true"></canvas>
+  <div class="ground"></div>
+
+  <div class="hero-inner">
+    <canvas id="heroLogo" width="232" height="172" role="img" aria-label="Logo de Jurassic Park"></canvas>
+    <span class="badge">WORLD 1-1 · ISLA NUBLAR · STATUS: ALL FENCES ONLINE</span>
+    <h1>JSALME<br><span class="role">AZURE DEVOPS ENGINEER</span></h1>
+    <p class="lead">Mantengo la infraestructura cloud que evita que 15 especies de dinosaurio se coman a los visitantes. Terraform, Kubernetes y Azure… con un pasado de ingeniero de datos que sabe contar raptores.</p>
+    <div class="cta">
+      <a class="btn" href="#missions">▶ VER MISIONES</a>
+      <a class="btn green" href="#terminal-sec">$ TERRAFORM APPLY</a>
+      <a class="btn red" href="#contact">♥ CONTRATAR</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLAYER SELECT ================= -->
+<section class="stage" id="player">
+  <div class="wrap">
+    <div class="stage-title reveal"><span class="world">SELECT PLAYER</span><h2>FICHA DEL PERSONAJE</h2><span class="line"></span></div>
+    <div class="player-grid">
+      <div class="box gold card-portrait reveal">
+        <div class="portrait-frame"><canvas id="portrait" aria-label="Avatar pixel art del ingeniero"></canvas></div>
+        <div class="name" id="cardName">JSALME</div>
+        <div class="class">CLASE: CLOUD RANGER<br>ESPECIALIDAD: AZURE · IaC · K8s</div>
+        <div class="idcard">
+          <div><span>ID InGen</span><b>#NUB-0451</b></div>
+          <div><span>Base</span><b>Control Room · Visitor Center</b></div>
+          <div><span>Acceso</span><b>Nivel 4 (sin Nedry)</b></div>
+          <div><span>Guardia</span><b>On-call 24/7</b></div>
+          <div><span>Arma</span><b>kubectl +5</b></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="box">
+          <h3>▶ ESTADISTICAS BASE</h3>
+          <div class="stats" id="stats"></div>
+        </div>
+        <p class="bio">
+          Soy <em>Azure DevOps Engineer</em> en la división de operaciones de Jurassic Park. Mi trabajo: que las vallas eléctricas, el sistema de tours, la telemetría de los dinosaurios y la app del Visitor Center <em>no se caigan nunca</em>, ni con tormentas tropicales ni con programadores descontentos.
+          Vengo del mundo del <em>dato</em> (Microsoft Fabric, Power BI, PySpark) y eso me da una ventaja rara en DevOps: diseño infraestructura pensando en los pipelines y en las métricas que alguien va a mirar a las 3 AM.
+        </p>
+        <div class="dialog">
+          <span class="who">JOHN HAMMOND:</span>
+          «No reparamos en gastos… pero este ingeniero nos recortó un 38% la factura de Azure igualmente.»
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INVENTORY ================= -->
+<section class="stage" id="inventory">
+  <div class="wrap">
+    <div class="stage-title reveal"><span class="world">WORLD 2</span><h2>INVENTARIO · STACK</h2><span class="line"></span></div>
+    <p class="sub reveal">Pasa el cursor o pulsa un objeto para ver sus estadísticas.</p>
+    <div class="inv-tabs reveal" role="tablist" id="invTabs">
+      <button class="on" data-f="all" role="tab" aria-selected="true">TODO</button>
+      <button data-f="cloud" role="tab" aria-selected="false">CLOUD & IaC</button>
+      <button data-f="cicd" role="tab" aria-selected="false">CI/CD & OBS</button>
+      <button data-f="data" role="tab" aria-selected="false">DATA</button>
+    </div>
+    <div class="inv-grid reveal" id="invGrid"></div>
+    <div class="box inv-info reveal" id="invInfo" aria-live="polite">
+      <h3>▶ SELECCIONA UN OBJETO</h3>
+      <p style="font-size:21px;color:#ccc">Cada herramienta ha sido probada en combate real contra velocirraptores.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MISSIONS ================= -->
+<section class="stage" id="missions">
+  <div class="wrap">
+    <div class="stage-title reveal"><span class="world">WORLD 3</span><h2>MAPA DE MISIONES</h2><span class="line"></span></div>
+    <p class="sub reveal">Proyectos de infraestructura desplegados en Isla Nublar. Pulsa una zona del mapa.</p>
+
+    <div class="map reveal">
+      <svg viewBox="0 0 800 340" id="mapSvg" aria-label="Mapa de Isla Nublar" shape-rendering="crispEdges">
+        <!-- sea waves -->
+        <g fill="#1a5a94">
+          <rect x="30" y="30" width="24" height="4"/><rect x="700" y="60" width="24" height="4"/><rect x="80" y="290" width="24" height="4"/><rect x="660" y="300" width="24" height="4"/><rect x="380" y="16" width="24" height="4"/>
+        </g>
+        <!-- island (pixel blocks) -->
+        <g id="island" fill="#1f9a3f"></g>
+        <!-- paths -->
+        <g stroke="#f8b800" stroke-width="4" stroke-dasharray="8 8" fill="none">
+          <polyline points="200,250 290,200 390,220 470,150 560,120 620,190 520,260"/>
+        </g>
+        <g id="mapNodes" font-family="'Press Start 2P'" font-size="10"></g>
+      </svg>
+      <div class="map-legend"><span style="color:var(--gold)">■ ZONA DESPLEGADA</span><span style="color:var(--red)">■ ZONA PELIGROSA</span><span>--- RUTA DEL TOUR</span></div>
+    </div>
+
+    <div class="missions" id="missionList"></div>
+  </div>
+</section>
+
+<!-- ================= TERMINAL ================= -->
+<section class="stage" id="terminal-sec">
+  <div class="wrap">
+    <div class="stage-title reveal"><span class="world">BONUS STAGE</span><h2>CONTROL ROOM TERMINAL</h2><span class="line"></span></div>
+    <p class="sub reveal">Esto es un sistema UNIX… lo conozco. Ejecuta un despliegue real del parque.</p>
+    <div class="term reveal">
+      <div class="term-bar"><i></i><i></i><i></i> ops@nublar-ctrl-01: ~/infra/paddocks</div>
+      <div class="term-body" id="termBody" aria-live="polite"></div>
+    </div>
+    <div class="term-actions reveal">
+      <button class="btn green" data-run="tf">▶ TERRAFORM APPLY</button>
+      <button class="btn" data-run="k8s">▶ KUBECTL GET DINOS</button>
+      <button class="btn" data-run="count">▶ CONTAR DINOSAURIOS</button>
+      <button class="btn red" data-run="nedry">▶ ACCESS MAIN SECURITY GRID</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BOSS ================= -->
+<section class="stage" id="boss">
+  <div class="wrap">
+    <div class="stage-title reveal"><span class="world" style="background:var(--red);color:#fff">BOSS FIGHT</span><h2>INCIDENTE: LA NOCHE DE LA TORMENTA</h2><span class="line" style="background:repeating-linear-gradient(90deg,var(--red) 0 12px,transparent 12px 20px)"></span></div>
+    <p class="sub reveal">Post-mortem sin culpables (bueno, casi) del peor incidente de la historia del parque. Pulsa ATACAR para reproducir la respuesta.</p>
+    <div class="boss-arena">
+      <div class="box red boss-card reveal">
+        <canvas id="bossSprite" class="boss-sprite" aria-label="Tyrannosaurus rex, jefe final"></canvas>
+        <div class="boss-name">T-REX FUERA DEL PADDOCK<br><span style="color:#aaa;font-size:9px">+ TORMENTA TROPICAL + SISTEMA APAGADO</span></div>
+        <div class="boss-hp"><div class="bar"><i id="bossHp" style="width:100%"></i></div></div>
+        <button class="btn red" id="attackBtn">⚔ ATACAR</button>
+        <div class="boss-result" id="bossResult" aria-live="polite"></div>
+      </div>
+      <div class="moves reveal" id="moves"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAREER ================= -->
+<section class="stage" id="career">
+  <div class="wrap">
+    <div class="stage-title reveal"><span class="world">SAVE FILE</span><h2>RUTA DEL JUGADOR</h2><span class="line"></span></div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+</section>
+
+<!-- ================= ACHIEVEMENTS ================= -->
+<section class="stage" id="achievements">
+  <div class="wrap">
+    <div class="stage-title reveal"><span class="world">TROPHIES</span><h2>LOGROS DESBLOQUEADOS</h2><span class="line"></span></div>
+    <p class="sub reveal">Hay uno secreto. Pista: ↑↑↓↓←→←→BA</p>
+    <div class="ach-grid reveal" id="achGrid"></div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <div class="continue">CONTINUE?</div>
+  <div class="countdown" id="countdown">9</div>
+  <p style="font-size:24px;color:#ccc;max-width:640px;margin:0 auto">¿Buscas a alguien que despliegue infraestructura en Azure con Terraform y Kubernetes, y que no pierda la calma cuando el T-Rex se escapa? Inserta una moneda.</p>
+  <div class="contact-links">
+    <a class="btn" id="mailBtn" href="#">✉ EMAIL</a>
+    <a class="btn green" id="ghBtn" href="#" target="_blank" rel="noopener">⌂ GITHUB</a>
+    <a class="btn red" id="liBtn" href="#" target="_blank" rel="noopener">in LINKEDIN</a>
+  </div>
+  <div class="game-over" id="gameOver"></div>
+</section>
+</main>
+
+<footer>
+  <div class="pixel">JSALME · AZURE DEVOPS ENGINEER · ISLA NUBLAR, 9°N 84°W</div>
+  <p style="margin-top:10px">Portafolio de fan: Jurassic Park y su logo son marcas de Universal Pictures y Amblin Entertainment. Las misiones del parque son ficticias; el stack y las habilidades son reales.</p>
+</footer>
+
+<!-- ================= MODALS ================= -->
+<div class="modal" id="nedryModal" role="dialog" aria-modal="true" aria-labelledby="nedryTitle">
+  <div class="box red">
+    <div class="nedry-wrap"><canvas id="nedrySprite" aria-hidden="true"></canvas></div>
+    <div class="nedry-text" id="nedryTitle">AH AH AH!<br>YOU DIDN'T SAY<br>THE MAGIC WORD!</div>
+    <p style="margin:16px 0;font-size:21px;color:#ccc">Acceso denegado. Desde la Operación Anti-Nedry, nadie tiene acceso permanente de administrador: RBAC mínimo, PIM con aprobación y todo auditado.</p>
+    <button class="btn" id="closeNedry">OK, LO SIENTO</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* =========================================================
+   CONFIG: cambia aquí tus datos reales
+   ========================================================= */
+const CONFIG = {
+  name: "JSALME",
+  email: "jsalmedev@gmail.com",
+  github: "https://github.com/SalmeronDevZone",
+  linkedin: "https://www.linkedin.com/in/jesussalmeronarmario/"
+};
+
+/* ---------- apply config ---------- */
+document.getElementById('hudName').textContent = CONFIG.name;
+document.getElementById('cardName').textContent = CONFIG.name;
+document.getElementById('mailBtn').href = 'mailto:' + CONFIG.email;
+document.getElementById('ghBtn').href = CONFIG.github;
+document.getElementById('liBtn').href = CONFIG.linkedin;
+
+/* =========================================================
+   SOUND (8-bit, WebAudio)
+   ========================================================= */
+let AC = null, soundOn = false;
+function tone(freq, dur = .08, type = 'square', when = 0, vol = .06){
+  if(!soundOn) return;
+  try{
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = type; o.frequency.value = freq;
+    const t = AC.currentTime + when;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + dur + .02);
+  }catch(e){}
+}
+const sfx = {
+  coin(){ tone(988,.07); tone(1319,.25,'square',.07); },
+  select(){ tone(660,.05); tone(880,.05,'square',.05); },
+  hit(){ tone(140,.12,'sawtooth'); tone(90,.18,'sawtooth',.08); },
+  start(){ [523,659,784,1047,784,1047].forEach((f,i)=>tone(f,.12,'square',i*.11)); },
+  win(){ [523,523,523,659,784,659,784,1047].forEach((f,i)=>tone(f,.14,'square',i*.13)); },
+  denied(){ [300,250,300,250].forEach((f,i)=>tone(f,.15,'square',i*.18)); },
+  key(){ tone(1400 + Math.random()*400,.015,'square',0,.02); }
+};
+const soundBtn = document.getElementById('soundBtn');
+function setSound(on){ soundOn = on; soundBtn.textContent = on ? '♪ ON' : '♪ OFF'; soundBtn.setAttribute('aria-pressed', on); }
+soundBtn.onclick = () => { setSound(!soundOn); sfx.select(); };
+const crtBtn = document.getElementById('crtBtn');
+crtBtn.onclick = () => { document.body.classList.toggle('no-crt'); crtBtn.setAttribute('aria-pressed', !document.body.classList.contains('no-crt')); };
+
+/* =========================================================
+   PIXEL SPRITE ENGINE
+   ========================================================= */
+function drawSprite(canvas, rows, pal, scale = 4){
+  const w = Math.max(...rows.map(r => r.length)), h = rows.length;
+  canvas.width = w * scale; canvas.height = h * scale;
+  const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);
+  rows.forEach((r, y) => [...r].forEach((ch, x) => {
+    if(pal[ch]){ ctx.fillStyle = pal[ch]; ctx.fillRect(x*scale, y*scale, scale, scale); }
+  }));
+}
+const REX_A = [
+"..........GGGGGGGG..",
+".........GGGGGGGGGG.",
+".........GGWKGGGGGG.",
+".........GGGGGGGGGG.",
+".........GGGGGGRRRR.",
+".........GGGGGWWW...",
+".........GGGGGGGG...",
+"G.......GGGGGG......",
+"G......GGGGGGG......",
+"GG...GGGGGGGGGGG....",
+"GGG.GGGGGGGGGG.G....",
+"GGGGGGGGGGGGGG......",
+".GGGGGGGGGGGGD......",
+"..GGGGGGGGGGD.......",
+"...GGGGGGGGD........",
+"....GGGGGGG.........",
+".....GGG.GG.........",
+".....GG...G.........",
+".....G....GG........",
+".....GG............."
+];
+const REX_B = REX_A.slice(0,16).concat([
+".....GG.GGG.........",
+".....G...GG.........",
+".....GG.............",
+"...................."
+]);
+const REX_PAL = {G:'#1f9a3f',D:'#0f5f2c',W:'#fcfcfc',K:'#000',R:'#e03c28'};
+
+const RAPTOR = [
+"........AAAA....",
+".......AAKAAAA..",
+".......AAAAAWW..",
+"......AAAA......",
+"A....AAAAA......",
+"AA..AAAAAAAA....",
+".AAAAAAAAA.A....",
+"..AAAAAAAA......",
+"...AAAAAA.......",
+"...AA..AA.......",
+"...A....A.......",
+"..AA....AA......"
+];
+const RAPTOR_PAL = {A:'#c8743c',K:'#000',W:'#fcfcfc'};
+
+const PORTRAIT = [
+"......HHHHHHHH......",
+".....HHHHHHHHHH.....",
+"....HHHHHHHHHHHH....",
+"...LLLLLLLLLLLLLL...",
+"..LLLLLLLLLLLLLLLL..",
+"....SSSSSSSSSSSS....",
+"....SSKSSSSSSKSS....",
+"....SSSSSSSSSSSS....",
+"....SSSSSNNSSSSS....",
+".....SSSSSSSSSS.....",
+".....SSSMMMMSSS.....",
+"......SSSSSSSS......",
+"....KKKSSSSSSKKK....",
+"...KKKKKKKKKKKKKK...",
+"..KKKKYYKKKKKKKKKK..",
+"..KKKKYYKKKKCCCKKK..",
+"..KKKKKKKKKKCCCKKK..",
+"..KKSSKKKKKKKKKSSK..",
+"..KKSSKKKKKKKKKSSK..",
+"....BBBBBBBBBBBB....",
+"....BBBB....BBBB....",
+"....BBBB....BBBB....",
+"...DDDDD....DDDDD..."
+];
+const PORTRAIT_PAL = {H:'#b8a060',L:'#8a7440',S:'#f0b890',K:'#3a5a2a',Y:'#f8b800',C:'#3cbcfc',B:'#5a4630',D:'#2a1a10',N:'#d8987a',M:'#8c3a2a'};
+
+const NEDRY = [
+"....HHHHHHHH....",
+"...HHHHHHHHHH...",
+"...SSSSSSSSSS...",
+"..GGGGSSSSGGGG..",
+"..GKKGSSSSGKKG..",
+"...SSSSSSSSSS...",
+"...SSSSNNSSSS...",
+"...SSSMMMMSSS...",
+"....SSSSSSSS....",
+"..WWWWWWWWWWWW..",
+".WWWWWWWWWWWWWW.",
+"SWWWWWWWWWWWWWWS",
+"SWWWWWWWWWWWWWWS"
+];
+const NEDRY_PAL = {H:'#3a2a1a',S:'#f0b890',G:'#555',K:'#000',N:'#d8987a',M:'#8c3a2a',W:'#fcfcfc'};
+
+/* ---------- Pixelated logo (image -> tiny canvas -> scaled up) ---------- */
+function pixelLogo(canvas, px = 3){
+  const img = new Image();
+  img.onload = () => {
+    const w = Math.round(img.width / px), h = Math.round(img.height / px);
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, w, h);
+  };
+  img.onerror = () => {
+    canvas.width = 232; canvas.height = 80;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#f8b800'; ctx.font = '16px "Press Start 2P"'; ctx.textAlign = 'center';
+    ctx.fillText('JURASSIC', 116, 34); ctx.fillStyle = '#e03c28'; ctx.fillText('PARK', 116, 62);
+  };
+  img.src = 'assets/jp-logo.png';
+}
+pixelLogo(document.getElementById('bootLogo'), 2);
+pixelLogo(document.getElementById('heroLogo'), 2);
+
+/* ---------- runner ---------- */
+const runner = document.getElementById('rexRunner');
+let rexFrame = 0;
+drawSprite(runner, REX_A, REX_PAL, 5);
+setInterval(() => { rexFrame ^= 1; drawSprite(runner, rexFrame ? REX_B : REX_A, REX_PAL, 5); }, 160);
+
+drawSprite(document.getElementById('portrait'), PORTRAIT, PORTRAIT_PAL, 10);
+drawSprite(document.getElementById('bossSprite'), REX_A, {...REX_PAL, G:'#3a7a2a', D:'#1f4a18', R:'#fcfcfc'}, 10);
+drawSprite(document.getElementById('nedrySprite'), NEDRY, NEDRY_PAL, 8);
+
+/* ---------- stars & palms ---------- */
+const stars = document.getElementById('stars');
+for(let i = 0; i < 70; i++){
+  const s = document.createElement('i');
+  s.style.left = Math.random()*100 + '%'; s.style.top = Math.random()*55 + '%';
+  s.style.animationDelay = (Math.random()*2) + 's';
+  if(Math.random() < .2){ s.style.width = s.style.height = '4px'; }
+  stars.appendChild(s);
+}
+const palms = document.getElementById('palms');
+[6, 22, 48, 71, 88, 95].forEach((x, i) => {
+  const p = document.createElement('div'); p.className = 'palm';
+  p.style.left = x + '%'; p.style.height = (90 + (i*23)%70) + 'px'; palms.appendChild(p);
+});
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+const boot = document.getElementById('boot');
+function startGame(){
+  if(boot.classList.contains('hide')) return;
+  setSound(true); sfx.start();
+  boot.classList.add('hide');
+  setTimeout(() => boot.remove(), 700);
+}
+boot.addEventListener('click', startGame);
+document.addEventListener('keydown', e => { if(document.getElementById('boot') && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); startGame(); } });
+
+/* =========================================================
+   SCORE / COINS / TOAST
+   ========================================================= */
+let score = 0, coins = 0;
+function addScore(n){
+  score += n; document.getElementById('score').textContent = String(score).padStart(6,'0');
+}
+function addCoin(){
+  coins++; document.getElementById('coins').textContent = String(coins).padStart(2,'0');
+  addScore(100); sfx.coin();
+}
+let toastT;
+function toast(msg){
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* =========================================================
+   STATS
+   ========================================================= */
+const STATS = [
+  ['AZURE', 88, '#3c8cfc'], ['TERRAFORM', 85, '#a07cfc'], ['KUBERNETES', 80, '#3cbcfc'],
+  ['DOCKER', 90, '#3cbcfc'], ['CI/CD', 84, '#f8b800'], ['OBSERVAB.', 78, '#e03c28'],
+  ['DATA ENG.', 92, '#fca044'], ['SANGRE FRIA', 99, '#8ae234']
+];
+const statsEl = document.getElementById('stats');
+STATS.forEach(([k, v, c]) => {
+  statsEl.insertAdjacentHTML('beforeend',
+    `<div class="stat"><span class="k">${k}</span><div class="bar"><i style="--c:${c}" data-w="${v}"></i></div><span class="n">${v}</span></div>`);
+});
+
+/* =========================================================
+   INVENTORY
+   ========================================================= */
+const ITEMS = [
+  {n:'AZURE', ic:'AZ', c:'#3c8cfc', cat:'cloud', lv:'LV 88', rare:1, d:'AKS, App Service, Functions, VNets con hub-spoke, Private Endpoints, Front Door, Key Vault, Entra ID y Azure Policy. La isla entera vive en 2 regiones.'},
+  {n:'TERRAFORM', ic:'TF', c:'#a07cfc', cat:'cloud', lv:'LV 85', rare:1, d:'Módulos reutilizables (paddock, network, aks), remote state en Storage con locking, workspaces por entorno, terratest y drift detection nocturno.'},
+  {n:'KUBERNETES', ic:'K8', c:'#3cbcfc', cat:'cloud', lv:'LV 80', rare:1, d:'AKS con node pools por criticidad, HPA/KEDA, NetworkPolicies, Pod Security, Ingress NGINX y cert-manager. Los raptores no escalan tan rápido.'},
+  {n:'HELM', ic:'HM', c:'#0f8ce0', cat:'cloud', lv:'LV 72', d:'Charts propios para los 40+ microservicios del parque con values por entorno.'},
+  {n:'DOCKER', ic:'DK', c:'#2496ed', cat:'cloud', lv:'LV 90', d:'Imágenes multi-stage, distroless, escaneo con Trivy y registro privado en ACR.'},
+  {n:'LINUX', ic:'>_', c:'#f8b800', cat:'cloud', lv:'LV 82', d:'Bash, systemd, networking y troubleshooting. «Esto es un sistema UNIX, ¡lo conozco!»'},
+  {n:'AZURE DEVOPS', ic:'AD', c:'#0078d4', cat:'cicd', lv:'LV 83', rare:1, d:'Pipelines YAML multi-stage, environments con approvals, variable groups enlazados a Key Vault, Boards para el backlog del parque.'},
+  {n:'GH ACTIONS', ic:'GA', c:'#e8e8e8', cat:'cicd', lv:'LV 78', d:'Workflows reutilizables, OIDC federado contra Azure (cero secretos), matrices de pruebas.'},
+  {n:'ARGO CD', ic:'AR', c:'#ef7b4d', cat:'cicd', lv:'LV 70', d:'GitOps: el estado de cada paddock vive en Git. Si no está en el repo, no existe.'},
+  {n:'PROMETHEUS', ic:'PR', c:'#e6522c', cat:'cicd', lv:'LV 76', d:'Métricas de vallas, sensores y servicios; alertas con Alertmanager directas al walkie de Muldoon.'},
+  {n:'GRAFANA', ic:'GF', c:'#f46800', cat:'cicd', lv:'LV 77', d:'Dashboards del Control Room en la pared gigante. Sí, la del Jurassic Park original.'},
+  {n:'GIT', ic:'GT', c:'#f05032', cat:'cicd', lv:'LV 90', d:'Trunk-based, PRs con revisión obligatoria, commits firmados. Nada de «Nedry-branches».'},
+  {n:'FABRIC', ic:'FB', c:'#11a37f', cat:'data', lv:'LV 92', rare:1, d:'Microsoft Fabric: lakehouse de telemetría de dinosaurios, notebooks y pipelines. Mi stack profesional diario.'},
+  {n:'PYSPARK', ic:'PS', c:'#e25a1c', cat:'data', lv:'LV 88', d:'Procesamiento de millones de eventos de sensores de movimiento por hora.'},
+  {n:'POWER BI', ic:'BI', c:'#f2c811', cat:'data', lv:'LV 90', d:'Dino Census Dashboard: el que demostró que había MAS dinosaurios de los esperados.'},
+  {n:'SSIS', ic:'IS', c:'#cc2927', cat:'data', lv:'LV 80', d:'ETL legacy heredado de InGen (1993). Migrado a Fabric sin perder un solo huevo.'},
+  {n:'MICROSTRAT.', ic:'MS', c:'#d9232e', cat:'data', lv:'LV 74', d:'Reporting corporativo para la junta de InGen y los abogados de Gennaro.'},
+  {n:'LOOKER STUDIO', ic:'LS', c:'#4285f4', cat:'data', lv:'LV 75', d:'Métricas de proyectos personales y del blog técnico.'}
+];
+const invGrid = document.getElementById('invGrid'), invInfo = document.getElementById('invInfo');
+function renderInv(f = 'all'){
+  invGrid.innerHTML = '';
+  ITEMS.filter(i => f === 'all' || i.cat === f).forEach(it => {
+    const b = document.createElement('div');
+    b.className = 'slot' + (it.rare ? ' rare' : ''); b.tabIndex = 0; b.setAttribute('role','button');
+    b.innerHTML = `<span class="tier">${it.cat.toUpperCase()}</span><div class="icon" style="background:${it.c}">${it.ic}</div><div class="nm">${it.n}</div><div class="lv">${it.lv}</div>`;
+    const show = () => {
+      invInfo.innerHTML = `<h3>▶ ${it.n} <span style="color:#aaa">· ${it.lv}${it.rare ? ' · ★ OBJETO RARO' : ''}</span></h3><p style="font-size:22px;color:#ddd">${it.d}</p>`;
+    };
+    b.addEventListener('mouseenter', show); b.addEventListener('focus', show);
+    b.addEventListener('click', () => { show(); sfx.select(); });
+    b.addEventListener('keydown', e => { if(e.key === 'Enter'){ show(); sfx.select(); } });
+    invGrid.appendChild(b);
+  });
+}
+renderInv();
+document.querySelectorAll('#invTabs button').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('#invTabs button').forEach(b => { b.classList.remove('on'); b.setAttribute('aria-selected','false'); });
+  btn.classList.add('on'); btn.setAttribute('aria-selected','true'); sfx.select(); renderInv(btn.dataset.f);
+}));
+
+/* =========================================================
+   MISSIONS
+   ========================================================= */
+const MISSIONS = [
+  {id:'1-1', zone:'PADDOCKS', x:290, y:200, diff:'★★★★★', danger:1,
+   t:'OPERACION VALLA ELECTRICA 2.0',
+   p:'Migré el sistema de control de las vallas de 10.000 voltios de un mainframe de 1993 a microservicios en AKS, con todo el paddock definido en Terraform.',
+   b:['Módulo Terraform "paddock" reutilizable: red, NSG, sensores y alertas por recinto','AKS multi-zona con PodDisruptionBudgets: el voltaje nunca baja durante un deploy','Rolling updates + readiness probes contra la API del generador'],
+   loot:[['0','cortes de valla'],['14','paddocks en IaC'],['<2min','deploy']],
+   tags:[['AKS','k8'],['Terraform','tf'],['Helm','k8'],['Azure Monitor','az']]},
+  {id:'1-2', zone:'CTRL ROOM', x:390, y:220, diff:'★★★★☆', danger:0,
+   t:'OPERACION ANTI-NEDRY',
+   p:'Tras el incidente de 1993, rediseñé el modelo de identidades: nadie, ni el informático mejor pagado, tiene acceso permanente de administrador.',
+   b:['Entra ID + PIM: acceso privilegiado just-in-time, con aprobación y caducidad','Secretos centralizados en Key Vault; OIDC federado en pipelines (cero contraseñas en código)','Azure Policy + Defender for Cloud: bloquea recursos públicos y apagados manuales del grid'],
+   loot:[['0','admins permanentes'],['100%','acciones auditadas'],['-92%','secretos en código']],
+   tags:[['Entra ID','az'],['Key Vault','az'],['Azure Policy','az'],['OIDC','tf']]},
+  {id:'2-1', zone:'VALLE', x:470, y:150, diff:'★★★★☆', danger:0,
+   t:'DINO-CENSUS: TELEMETRIA EN TIEMPO REAL',
+   p:'Aquí mi pasado de ingeniero de datos es un superpoder: plataforma de streaming que recoge cada movimiento de cada dinosaurio y lo cuenta (bien).',
+   b:['IoT Hub + Event Hubs ingiriendo 3M eventos/hora de sensores de movimiento','Lakehouse en Microsoft Fabric con PySpark; infraestructura desplegada con Terraform','Dashboard Power BI "Dino Census": detectó 238 animales cuando esperábamos 238… y luego 240'],
+   loot:[['3M/h','eventos'],['<5s','latencia'],['+2','dinos extra']],
+   tags:[['Fabric','dt'],['PySpark','dt'],['Event Hubs','az'],['Power BI','dt']]},
+  {id:'2-2', zone:'TOUR', x:560, y:120, diff:'★★★☆☆', danger:0,
+   t:'JEEP TOUR CI/CD',
+   p:'Los jeeps del tour van sobre raíles y su software también: pipelines que llevan cada cambio de la app del tour a producción sin sustos.',
+   b:['Azure DevOps Pipelines YAML multi-stage: build → test → scan → staging → prod','Despliegues blue-green con Front Door: si algo falla, rollback en 30 segundos','GitOps con Argo CD para la flota de pantallas del Visitor Center'],
+   loot:[['45','deploys/semana'],['30s','rollback'],['0','jeeps varados']],
+   tags:[['Azure DevOps','az'],['Argo CD','k8'],['Docker','k8'],['Front Door','az']]},
+  {id:'3-1', zone:'MUELLE', x:620, y:190, diff:'★★★★★', danger:1,
+   t:'PLAN DE EVACUACION · SITE B',
+   p:'Disaster Recovery entre Isla Nublar e Isla Sorna. Cuando llega la tormenta tropical, el parque entero cambia de región sin que el Visitor Center se entere.',
+   b:['Arquitectura activo-pasivo multi-región definida 100% en Terraform','Azure Site Recovery + bases de datos con geo-replicación','Game days trimestrales: simulacros de huracán con failover real'],
+   loot:[['15min','RTO'],['<1min','RPO'],['4','simulacros/año']],
+   tags:[['Site Recovery','az'],['Terraform','tf'],['Traffic Mgr','az'],['Chaos','k8']]},
+  {id:'3-2', zone:'VISITOR CTR', x:520, y:260, diff:'★★★☆☆', danger:0,
+   t:'FINOPS: «NO REPARAMOS EN GASTOS»',
+   p:'Hammond decía que no reparaba en gastos. Contabilidad no opinaba igual. Optimización de costes de toda la suscripción del parque.',
+   b:['Etiquetado obligatorio por zona vía Azure Policy y reporting de costes en Power BI','Reservas + spot node pools para cargas batch de análisis genético','Apagado automático de entornos no productivos fuera del horario del parque'],
+   loot:[['-38%','factura Azure'],['100%','recursos etiquetados'],['1','Hammond feliz']],
+   tags:[['Cost Mgmt','az'],['Spot','k8'],['Power BI','dt'],['Policy','az']]},
+  {id:'4-1', zone:'LABORATORIO', x:200, y:250, diff:'★★★★☆', danger:0,
+   t:'PLATAFORMA DEL LAB GENETICO',
+   p:'Plataforma interna para que los genetistas del Dr. Wu lancen sus análisis de ADN (del mosquito en ámbar) sin abrir tickets.',
+   b:['Plantillas self-service con Terraform + pipelines: entorno listo en 10 minutos','Jobs de secuenciación en AKS con KEDA escalando según la cola','Observabilidad con Prometheus + Grafana y SLOs publicados'],
+   loot:[['10min','nuevo entorno'],['-80%','tickets'],['99.9%','SLO']],
+   tags:[['KEDA','k8'],['Terraform','tf'],['Prometheus','k8'],['Grafana','k8']]}
+];
+const missionList = document.getElementById('missionList'), mapNodes = document.getElementById('mapNodes');
+MISSIONS.forEach(m => {
+  missionList.insertAdjacentHTML('beforeend', `
+  <article class="box ${m.danger ? 'red' : 'green'} mission reveal" id="m-${m.id}">
+    <div class="lvl"><span class="id">NIVEL ${m.id}</span><span class="diff" title="Dificultad">${m.diff}</span></div>
+    <h3>${m.t}</h3>
+    <p>${m.p}</p>
+    <ul>${m.b.map(x => `<li>${x}</li>`).join('')}</ul>
+    <div class="tags">${m.tags.map(([n,c]) => `<span class="tag ${c}">${n}</span>`).join('')}</div>
+    <div class="loot">${m.loot.map(([v,l]) => `<div><b>${v}</b><span>${l}</span></div>`).join('')}</div>
+  </article>`);
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('class','node'); g.setAttribute('tabindex','0'); g.setAttribute('role','button');
+  g.setAttribute('aria-label', `Nivel ${m.id}: ${m.t}`);
+  g.innerHTML = `<rect class="pin" x="${m.x-10}" y="${m.y-10}" width="20" height="20" fill="${m.danger ? '#e03c28' : '#fcfcfc'}" stroke="#000" stroke-width="4"/>
+    <rect x="${m.x-46}" y="${m.y+16}" width="92" height="18" fill="#000"/>
+    <text x="${m.x}" y="${m.y+29}" text-anchor="middle" fill="#fcfcfc" font-size="8">${m.id} ${m.zone}</text>`;
+  const go = () => {
+    sfx.select();
+    const el = document.getElementById('m-' + m.id);
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+    document.querySelectorAll('.node').forEach(n => n.classList.remove('active')); g.classList.add('active');
+  };
+  g.addEventListener('click', go); g.addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
+  mapNodes.appendChild(g);
+});
+
+/* island pixel blocks */
+(function(){
+  const island = document.getElementById('island');
+  const rows = [
+    '..........######............',
+    '.......############.........',
+    '.....################.......',
+    '....###################.....',
+    '...#####################....',
+    '..#######################...',
+    '..########################..',
+    '.#########################..',
+    '.########################...',
+    '..######################....',
+    '...###################......',
+    '.....###############........',
+    '.......##########...........'
+  ];
+  const s = 24, ox = 60, oy = 20;
+  rows.forEach((r, y) => [...r].forEach((c, x) => {
+    if(c === '#'){
+      const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x', ox + x*s); rect.setAttribute('y', oy + y*s);
+      rect.setAttribute('width', s); rect.setAttribute('height', s);
+      const edge = (!rows[y-1] || rows[y-1][x] !== '#') || (!rows[y+1] || rows[y+1][x] !== '#') || r[x-1] !== '#' || r[x+1] !== '#';
+      rect.setAttribute('fill', edge ? '#e8d08a' : ((x+y)%3 === 0 ? '#1a8a38' : '#1f9a3f'));
+      island.appendChild(rect);
+    }
+  }));
+  // volcano / mountains on island
+  const m = document.createElementNS('http://www.w3.org/2000/svg','g');
+  m.innerHTML = `<rect x="300" y="60" width="24" height="24" fill="#6b3f1d"/><rect x="276" y="84" width="72" height="24" fill="#6b3f1d"/><rect x="300" y="52" width="24" height="8" fill="#e03c28"/>
+  <rect x="660" y="230" width="48" height="10" fill="#8a6a3a"/><rect x="700" y="210" width="8" height="30" fill="#8a6a3a"/>`;
+  island.appendChild(m);
+})();
+
+/* =========================================================
+   TERMINAL
+   ========================================================= */
+const termBody = document.getElementById('termBody');
+const SCRIPTS = {
+  tf: [
+    ['$ ','g'],['terraform plan -out=tfplan -var-file=envs/prod.tfvars\n','w'],
+    ['\nmodule.paddock["trex"].azurerm_kubernetes_cluster_node_pool.fence: Refreshing state...\n','d'],
+    ['module.paddock["raptors"].azurerm_network_security_group.nsg: Refreshing state...\n','d'],
+    ['\nTerraform will perform the following actions:\n\n','w'],
+    ['  # module.paddock["raptors"].azurerm_monitor_metric_alert.fence_voltage','w'],[' will be created\n','g'],
+    ['  + resource "azurerm_monitor_metric_alert" "fence_voltage" {\n','g'],
+    ['      + name      = "raptor-fence-voltage-low"\n','g'],
+    ['      + severity  = 0\n','g'],
+    ['      + criteria  { metric = "voltage", operator = "LessThan", threshold = 10000 }\n','g'],
+    ['    }\n\n','g'],
+    ['  # module.aks.azurerm_kubernetes_cluster.nublar','w'],[' will be updated in-place\n','y'],
+    ['  ~ default_node_pool { ~ node_count = 3 -> 5 }\n\n','y'],
+    ['Plan: ','w'],['1 to add, ','g'],['1 to change, ','y'],['0 to destroy.\n\n','r'],
+    ['$ ','g'],['terraform apply tfplan\n','w'],
+    ['module.paddock["raptors"].azurerm_monitor_metric_alert.fence_voltage: Creating...\n','d'],
+    ['module.aks.azurerm_kubernetes_cluster.nublar: Modifying... [id=/subscriptions/.../nublar-prod]\n','d'],
+    ['module.paddock["raptors"].azurerm_monitor_metric_alert.fence_voltage: Creation complete after 4s\n','g'],
+    ['module.aks.azurerm_kubernetes_cluster.nublar: Modifications complete after 2m11s\n','g'],
+    ['\nApply complete! Resources: 1 added, 1 changed, 0 destroyed.\n','g'],
+    ['⚡ Valla de los raptores protegida. Nadie ha sido comido.\n','y']
+  ],
+  k8s: [
+    ['$ ','g'],['kubectl get pods -n paddocks -o wide\n','w'],
+    ['NAME                        READY   STATUS    RESTARTS   NODE\n','c'],
+    ['fence-controller-trex-7d9f  1/1     Running   0          aks-critical-01\n','w'],
+    ['fence-controller-rapt-5c2a  1/1     Running   0          aks-critical-02\n','w'],
+    ['motion-sensor-ingest-8f1b   3/3     Running   0          aks-data-01\n','w'],
+    ['tour-jeep-api-6b44          2/2     Running   0          aks-general-03\n','w'],
+    ['nedry-backdoor-0000         0/1     ','w'],['Terminated','r'],['  ∞          ','w'],['(eliminado)\n','r'],
+    ['\n$ ','g'],['kubectl get hpa -n paddocks\n','w'],
+    ['NAME            TARGETS   MINPODS   MAXPODS   REPLICAS\n','c'],
+    ['tour-jeep-api   61%/70%   2         20        6\n','w'],
+    ['\n$ ','g'],['kubectl top nodes | grep critical\n','w'],
+    ['aks-critical-01   38%   52%\naks-critical-02   41%   49%\n','w'],
+    ['\n✔ Todos los paddocks en estado Healthy.\n','g']
+  ],
+  count: [
+    ['$ ','g'],['python dino_census.py --expected 238 --source fabric://lakehouse/motion\n','w'],
+    ['[spark] Leyendo 3.141.592 eventos de sensores de movimiento...\n','d'],
+    ['[spark] Deduplicando por firma de movimiento y especie...\n','d'],
+    ['\nESPECIE              ESPERADO   DETECTADO\n','c'],
+    ['Tyrannosaurus        1          1\n','w'],
+    ['Velociraptor         8          ','w'],['8\n','w'],
+    ['Triceratops          8          8\n','w'],
+    ['Compsognathus        49         ','w'],['52 ','r'],['⚠\n','y'],
+    ['Othnielia            23         ','w'],['25 ','r'],['⚠\n','y'],
+    ['...\n','d'],
+    ['TOTAL                238        ','w'],['292\n','r'],
+    ['\n⚠ ALERTA: los dinosaurios se están reproduciendo.\n','y'],
+    ['→ Alerta enviada a Dr. Grant, Dr. Malcolm y #ops-oncall\n','c'],
+    ['«La vida se abre camino.»\n','g']
+  ]
+};
+let termBusy = false;
+async function runScript(name){
+  if(termBusy) return;
+  if(name === 'nedry'){ openNedry(); return; }
+  termBusy = true; termBody.innerHTML = '';
+  const cur = document.createElement('span'); cur.className = 'cursor';
+  for(const [txt, cls] of SCRIPTS[name]){
+    const span = document.createElement('span'); span.className = cls; termBody.appendChild(span); termBody.appendChild(cur);
+    const typing = cls === 'w' && !txt.startsWith(' ') && txt.length < 90;
+    for(const ch of txt){
+      span.textContent += ch;
+      if(typing){ sfx.key(); await sleep(14); }
+    }
+    termBody.scrollTop = termBody.scrollHeight;
+    await sleep(typing ? 120 : 70);
+  }
+  termBusy = false; addScore(500);
+  if(name === 'tf') unlock('apply');
+  if(name === 'count') unlock('life');
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+document.querySelectorAll('[data-run]').forEach(b => b.addEventListener('click', () => runScript(b.dataset.run)));
+termBody.innerHTML = '<span class="g">ops@nublar-ctrl-01</span>:<span class="c">~/infra/paddocks</span>$ <span class="d"># elige un comando abajo ↓</span> <span class="cursor"></span>';
+
+/* ---------- Nedry ---------- */
+const nedryModal = document.getElementById('nedryModal');
+let nedryT;
+function openNedry(){
+  nedryModal.classList.add('show'); sfx.denied(); nedryT = setInterval(sfx.denied, 900);
+  unlock('magic'); document.getElementById('closeNedry').focus();
+}
+function closeNedry(){ nedryModal.classList.remove('show'); clearInterval(nedryT); }
+document.getElementById('closeNedry').onclick = closeNedry;
+nedryModal.addEventListener('click', e => { if(e.target === nedryModal) closeNedry(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeNedry(); });
+
+/* =========================================================
+   BOSS FIGHT (incident timeline)
+   ========================================================= */
+const MOVES = [
+  ['T+00:00','<b>DETECCION.</b> Alertmanager dispara: voltaje del paddock 9 a 0V y un node pool caído por la tormenta. Página automática al on-call (yo).'],
+  ['T+00:04','<b>CONTENCION.</b> Los fence-controllers se reprograman solos en la zona 2 gracias a los PodDisruptionBudgets y la topología multi-zona de AKS.'],
+  ['T+00:09','<b>DIAGNOSTICO.</b> Logs en Log Analytics muestran un cambio manual fuera de pipeline. Azure Policy lo revierte; PIM revoca el acceso sospechoso.'],
+  ['T+00:15','<b>RECUPERACION.</b> terraform apply restaura el estado declarado del grid. Paddock 9 a 10.000V. Rexy vuelve a casa (con una cabra).'],
+  ['T+48:00','<b>POST-MORTEM.</b> Blameless review, 7 acciones de mejora, runbook actualizado y un nuevo game day de "sistema apagado" cada trimestre.']
+];
+const movesEl = document.getElementById('moves');
+MOVES.forEach(([t, p], i) => movesEl.insertAdjacentHTML('beforeend', `<div class="move" id="mv${i}"><span class="t">${t}</span><p>${p}</p></div>`));
+let bossStep = 0;
+document.getElementById('attackBtn').addEventListener('click', () => {
+  const hp = document.getElementById('bossHp'), spr = document.getElementById('bossSprite'), res = document.getElementById('bossResult');
+  if(bossStep >= MOVES.length){
+    bossStep = 0; hp.style.width = '100%'; res.textContent = '';
+    document.querySelectorAll('.move').forEach(m => m.classList.remove('done'));
+    document.getElementById('attackBtn').textContent = '⚔ ATACAR'; return;
+  }
+  document.getElementById('mv' + bossStep).classList.add('done');
+  document.getElementById('mv' + bossStep).scrollIntoView({behavior:'smooth', block:'nearest'});
+  spr.classList.remove('hit'); void spr.offsetWidth; spr.classList.add('hit'); sfx.hit();
+  bossStep++; hp.style.width = (100 - bossStep * 20) + '%'; addScore(1000);
+  res.textContent = `COMBO x${bossStep}! ` + MOVES[bossStep-1][0];
+  if(bossStep === MOVES.length){
+    res.innerHTML = 'INCIDENTE RESUELTO!<br>MTTR: 15 MIN · 0 VISITANTES COMIDOS';
+    sfx.win(); unlock('boss'); document.getElementById('attackBtn').textContent = '↺ REPETIR';
+  }
+});
+
+/* =========================================================
+   CAREER TIMELINE
+   ========================================================= */
+const CAREER = [
+  {when:'WORLD 1 · ETAPA ACTUAL', cur:1, t:'AZURE DEVOPS ENGINEER', co:'Jurassic Park · InGen Ops Division · Isla Nublar',
+   p:'Infraestructura cloud del parque en Azure: IaC con Terraform, plataformas en AKS, CI/CD, seguridad de identidades, observabilidad y DR multi-región. Guardias 24/7 y game days contra tormentas tropicales.'},
+  {when:'WORLD 0-2 · PROYECTOS PERSONALES', t:'ARQUITECTO WEB & INFRA', co:'Laboratorio propio',
+   p:'Diseño de arquitectura de aplicaciones web, backend/frontend y APIs. Despliegue en servidores online, virtualización y entornos containerizados con Docker. Métricas en Looker Studio y todo versionado con Git.'},
+  {when:'WORLD 0-1 · DATA', t:'INGENIERO DE DATOS · BI EMPRESARIAL', co:'T-Systems',
+   p:'Soluciones BI empresariales con Microsoft Fabric, Power BI y PySpark. ETL clásico con SSIS y reporting corporativo con MicroStrategy. Aquí aprendí que la infraestructura existe para que los datos lleguen a quien los necesita.'}
+];
+const tlEl = document.getElementById('timeline');
+CAREER.forEach(c => tlEl.insertAdjacentHTML('beforeend', `
+  <div class="tl box ${c.cur ? 'current green' : ''} reveal"><div class="when">${c.when}</div><h3>${c.t}</h3><div class="co">${c.co}</div><p>${c.p}</p></div>`));
+
+/* =========================================================
+   ACHIEVEMENTS
+   ========================================================= */
+const ACH = [
+  {k:'fence', i:'⚡', t:'10.000 VOLTIOS', d:'Cero cortes de valla en producción.', on:1},
+  {k:'iac', i:'📜', t:'TODO ES CODIGO', d:'100% de la isla en Terraform.', on:1},
+  {k:'az', i:'☁', t:'QUEST: CERTIFICACION', d:'En ruta: AZ-104 → AZ-400 → Terraform Associate.', on:1},
+  {k:'k8s', i:'⎈', t:'DOMADOR DE PODS', d:'Clúster AKS con 40+ microservicios.', on:1},
+  {k:'apply', i:'✔', t:'APPLY COMPLETE', d:'Ejecuta terraform apply en la terminal.'},
+  {k:'life', i:'🥚', t:'LA VIDA SE ABRE CAMINO', d:'Cuenta los dinosaurios en la terminal.'},
+  {k:'magic', i:'🔒', t:'MAGIC WORD', d:'Intenta acceder al grid de seguridad.'},
+  {k:'boss', i:'🦖', t:'REXY CONTENIDA', d:'Derrota al boss del incidente.'},
+  {k:'konami', i:'🎮', t:'???', d:'Código secreto.'}
+];
+const achGrid = document.getElementById('achGrid');
+function renderAch(){
+  achGrid.innerHTML = ACH.map(a => `<div class="ach ${a.on ? 'unlocked' : 'locked'}"><div class="medal">${a.i}</div><div><div class="tt">${a.on || a.k !== 'konami' ? a.t : '???'}</div><div class="dd">${a.d}</div></div></div>`).join('');
+}
+function unlock(k){
+  const a = ACH.find(x => x.k === k); if(!a || a.on) return;
+  a.on = 1; if(k === 'konami'){ a.t = 'CLEVER GIRL'; a.d = 'Encontraste el código Konami.'; }
+  renderAch(); addScore(2500); toast('🏆 LOGRO: ' + a.t); setTimeout(sfx.win, 300);
+}
+renderAch();
+
+/* =========================================================
+   REVEAL + COINS ON SCROLL
+   ========================================================= */
+const io = new IntersectionObserver(entries => entries.forEach(e => {
+  if(e.isIntersecting){
+    e.target.classList.add('in');
+    e.target.querySelectorAll('.bar i[data-w]').forEach(b => b.style.width = b.dataset.w + '%');
+    io.unobserve(e.target);
+  }
+}), {threshold:.12});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+const seen = new Set();
+const coinIo = new IntersectionObserver(entries => entries.forEach(e => {
+  if(e.isIntersecting && !seen.has(e.target.id)){ seen.add(e.target.id); if(!document.getElementById('boot')) addCoin(); }
+}), {threshold:.3});
+document.querySelectorAll('section.stage, #contact').forEach(s => coinIo.observe(s));
+
+/* =========================================================
+   CONTINUE COUNTDOWN
+   ========================================================= */
+let cd = 9, cdTimer = null;
+const cdEl = document.getElementById('countdown'), go = document.getElementById('gameOver');
+new IntersectionObserver(entries => entries.forEach(e => {
+  if(e.isIntersecting && !cdTimer){
+    cd = 9; cdEl.textContent = cd; go.textContent = '';
+    cdTimer = setInterval(() => {
+      cd--; cdEl.textContent = Math.max(cd, 0); tone(440 - (9 - cd) * 20, .08);
+      if(cd <= 0){ clearInterval(cdTimer); go.textContent = 'GAME OVER… A MENOS QUE ME ESCRIBAS ✉'; setTimeout(() => cdTimer = null, 4000); }
+    }, 1000);
+  }
+}), {threshold:.6}).observe(document.getElementById('contact'));
+['mailBtn','ghBtn','liBtn'].forEach(id => document.getElementById(id).addEventListener('click', () => {
+  clearInterval(cdTimer); cdEl.textContent = '★'; go.style.color = 'var(--lime)'; go.textContent = 'PLAYER 2 HAS JOINED!'; sfx.win();
+}));
+
+/* =========================================================
+   KONAMI CODE → STAMPEDE
+   ========================================================= */
+const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let kIdx = 0;
+document.addEventListener('keydown', e => {
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+  kIdx = (k === KONAMI[kIdx]) ? kIdx + 1 : (k === KONAMI[0] ? 1 : 0);
+  if(kIdx === KONAMI.length){ kIdx = 0; stampede(); }
+});
+function stampede(){
+  unlock('konami'); toast('🦖 CLEVER GIRL… ¡ESTAMPIDA!');
+  for(let i = 0; i < 9; i++){
+    const c = document.createElement('canvas'); c.className = 'stampede';
+    const isRex = i % 3 === 0;
+    drawSprite(c, isRex ? REX_A : RAPTOR, isRex ? REX_PAL : RAPTOR_PAL, isRex ? 6 : 5);
+    c.style.bottom = (10 + (i * 37) % 120) + 'px'; c.style.animationDelay = (i * .25) + 's';
+    document.body.appendChild(c); setTimeout(() => c.remove(), 4000 + i * 250);
+  }
+  [0,1,2,3].forEach(i => setTimeout(sfx.hit, i * 250));
+}
+</script>
+</body>
+</html>
